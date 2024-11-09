@@ -1,4 +1,4 @@
-# CPSC 224 Final Project: [Git Good at Blackjack]
+# CPSC 224 Final Project: Git Good at Blackjack
 
 ### Project Description:
 
