@@ -2,19 +2,19 @@
  * Final project main driver class
  * 
  * 
- * Project Description:
+ * Project Description: Digital version of Blackjack
  * 
  * 
- * Contributors:
+ * Contributors: Tyler Yasukochi, Parker Shore, Jonathan Courter
  * 
  * 
- * Copyright: 2023
+ * Copyright: 2024
  */
 package edu.gonzaga;
 
 
 /** Main program class for launching your team's program. */
-public class MainGame {
+public class Blackjack {
     public static void main(String[] args) {
         System.out.println("Hello Team Game");
 
