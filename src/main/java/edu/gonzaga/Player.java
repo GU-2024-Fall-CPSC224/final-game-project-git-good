@@ -1,8 +1,8 @@
 package edu.gonzaga;
 
 public class Player {
-    private Integer balance;
-    private String name;
+    protected Integer balance;
+    protected String name;
     
     /*
      * Constructor

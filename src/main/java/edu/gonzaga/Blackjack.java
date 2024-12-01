@@ -12,13 +12,19 @@
  */
 package edu.gonzaga;
 
+import javax.swing.SwingUtilities;
 
 /** Main program class for launching your team's program. */
 public class Blackjack {
     public static void main(String[] args) {
-        System.out.println("Hello Team Game");
 
+        PlayerList players = new PlayerList();
 
-        // Your code here. Good luck!
+        Blackjack game = new Blackjack();
+        SwingUtilities.invokeLater(() -> {
+            StartScreen startScreen = new StartScreen();
+            startScreen.runGUI();
+        });
+
     }
 }
