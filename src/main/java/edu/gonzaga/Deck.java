@@ -42,7 +42,19 @@ public class Deck {
     Draw method
     */
     public Card draw() {
+        if (cards.isEmpty()) {}
+            repopulateAndShuffle();
         return cards.remove(0);
+    }
+
+    public void repopulateAndShuffle() {
+        cards.clear();
+        for (String value : values) {
+            for (Character suit : suits) {
+                cards.add(new Card(value, suit));
+            }
+        }
+        Collections.shuffle(cards);
     }
 
     /*

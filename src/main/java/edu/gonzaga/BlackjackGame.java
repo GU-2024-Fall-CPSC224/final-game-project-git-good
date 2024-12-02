@@ -17,6 +17,8 @@ import javax.swing.SwingUtilities;
 public class BlackjackGame extends JFrame {
     private final JTextArea playerArea;
     private final JTextArea dealerArea;
+    private final JButton hitButton;
+    private final JButton standButton;
     private final JLabel statusLabel;
     private final Deck deck;
     private final List<Card> playerHand;
@@ -41,8 +43,8 @@ public class BlackjackGame extends JFrame {
         add(statusLabel, BorderLayout.NORTH);
 
         // Buttons
-        JButton hitButton = new JButton("Hit");
-        JButton standButton = new JButton("Stand");
+        this.hitButton = new JButton("Hit");
+        this.standButton = new JButton("Stand");
         JButton restartButton = new JButton("Restart");
 
         JPanel buttonPanel = new JPanel();
@@ -72,6 +74,8 @@ public class BlackjackGame extends JFrame {
         playerHand.add(deck.draw());
         dealerHand.add(deck.draw());
         dealerHand.add(deck.draw());
+        hitButton.setEnabled(true);
+        standButton.setEnabled(true);
         updateAreas();
         statusLabel.setText("Your move!");
     }
@@ -80,32 +84,53 @@ public class BlackjackGame extends JFrame {
         playerHand.add(deck.draw());
         if (calculateHandValue(playerHand) > 21) {
             statusLabel.setText("You busted! Dealer wins.");
+            hitButton.setEnabled(false);
+            standButton.setEnabled(false);
         }
+        blackjackCheck();
         updateAreas();
     }
 
     private void stand() {
-        while (calculateHandValue(dealerHand) < 17) {
+        while (calculateHandValue(dealerHand) < 12 || calculateHandValue(playerHand) > calculateHandValue(dealerHand)) {
             dealerHand.add(deck.draw());
         }
         determineWinner();
         updateAreas();
     }
 
+    private void blackjackCheck() {
+        if (calculateHandValue(playerHand) == 21) {
+            statusLabel.setText("Blackjack! You win!");
+            hitButton.setEnabled(false);
+            standButton.setEnabled(false);
+        }
+    }
+
     private void determineWinner() {
         int playerValue = calculateHandValue(playerHand);
         int dealerValue = calculateHandValue(dealerHand);
-
+    
         if (playerValue > 21) {
             statusLabel.setText("You busted! Dealer wins.");
+            hitButton.setEnabled(false);
+            standButton.setEnabled(false);
         } else if (dealerValue > 21) {
-            statusLabel.setText("Dealer busted! You win.");
+            statusLabel.setText("Dealer busted! You win!");
+            hitButton.setEnabled(false);
+            standButton.setEnabled(false);
         } else if (playerValue > dealerValue) {
             statusLabel.setText("You win!");
+            hitButton.setEnabled(false);
+            standButton.setEnabled(false);
         } else if (playerValue < dealerValue) {
             statusLabel.setText("Dealer wins!");
+            hitButton.setEnabled(false);
+            standButton.setEnabled(false);
         } else {
-            statusLabel.setText("It's a tie!");
+            statusLabel.setText("Push!");
+            hitButton.setEnabled(false);
+            standButton.setEnabled(false);
         }
     }
 
