@@ -14,7 +14,16 @@ class Card {
         return value + " of " + suit;
     }
 
-    // public Integer getValue() {
-    //     return Integer(value);
-    // }
+    public Integer getValue() {
+        switch (value) {
+            case "A":
+                return 1;
+            case "J":
+            case "Q":
+            case "K":
+                return 10;
+            default:
+                return Integer.valueOf(value);
+        }
+    }
 }

@@ -39,6 +39,13 @@ public class Deck {
     }
 
     /*
+    Draw method
+    */
+    public Card draw() {
+        return cards.remove(0);
+    }
+
+    /*
      * Get size
      */
     public Integer size() {

@@ -1,8 +1,17 @@
 package edu.gonzaga;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 // Blackjack Game Class
 public class BlackjackGame extends JFrame {
@@ -58,6 +67,7 @@ public class BlackjackGame extends JFrame {
     private void startGame() {
         playerHand.clear();
         dealerHand.clear();
+        deck.shuffle();
         playerHand.add(deck.draw());
         playerHand.add(deck.draw());
         dealerHand.add(deck.draw());
