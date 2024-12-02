@@ -1,26 +1,48 @@
 package edu.gonzaga;
+
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
-// Deck Class
-class Deck {
-    private final List<Card> cards;
 
-    public Deck() {
+/*
+ * The deck class to store a list of cards
+ * 
+ * 
+ */
+public class Deck {
+    private final String[] values = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
+    private final Character HEARTS = '\u2665';
+    private final Character DIAMONDS = '\u2666';
+    private final Character CLUBS = '\u2663';
+    private final Character SPADES = '\u2660';
+    private final Character[] suits = {HEARTS, DIAMONDS, CLUBS, SPADES};
+
+    private final ArrayList<Card> cards;
+    
+    /*
+     * Constructor
+     */
+    public Deck(){
         cards = new ArrayList<>();
-        String[] suits = {"Hearts", "Diamonds", "Clubs", "Spades"};
-        String[] ranks = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"};
-        int[] values = {2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11};
 
-        for (String suit : suits) {
-            for (int i = 0; i < ranks.length; i++) {
-                cards.add(new Card(suit, ranks[i], values[i]));
+        for (String value : values) {
+            for (char suit : suits) {
+                cards.add(new Card(value, suit));
             }
         }
+    }
+
+    /*
+     * Shuffle method
+     */
+    public void shuffle() {
         Collections.shuffle(cards);
     }
 
-    public Card draw() {
-        return cards.remove(0);
+    /*
+     * Get size
+     */
+    public Integer size() {
+        return cards.size();
     }
+    
 }

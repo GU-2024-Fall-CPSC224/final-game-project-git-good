@@ -17,10 +17,11 @@ for value in values:
 playerHand = []
 dealerHand = []
 
-money = 10000
+
 wager = 0
 
 def main():
+    money = 10000
 
     print('Welcome to blackjack! You will be given two cards, and on your turn, the choice to hit or stand.')
     print("Hit: Pick up another card.\tStand: Keep the cards you have.")
