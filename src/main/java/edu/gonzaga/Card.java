@@ -1,21 +1,20 @@
 package edu.gonzaga;
 
 class Card {
-    private final String suit;
-    private final String rank;
-    private final int value;
+    private final String value;
+    private final Character suit;
+    
 
-    public Card(String suit, String rank, int value) {
-        this.suit = suit;
-        this.rank = rank;
+    public Card(String value, Character suit) {
         this.value = value;
+        this.suit = suit;
     }
     @Override
     public String toString() {
-        return rank + " of " + suit;
+        return value + " of " + suit;
     }
 
-    public int getValue() {
-        return value;
-    }
+    // public Integer getValue() {
+    //     return Integer(value);
+    // }
 }

@@ -1,8 +1,8 @@
 package edu.gonzaga;
 
 public class GUIManager {
-    StartScreen startScreen = new StartScreen();
-    startScreen.runGUI();
+    // StartScreen startScreen = new StartScreen();
+    // startScreen.runGUI();
 
     // void runGUI() {
     //     System.out.println("Starting Game");

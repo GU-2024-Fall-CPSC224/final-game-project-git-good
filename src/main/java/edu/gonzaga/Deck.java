@@ -25,7 +25,7 @@ public class Deck {
         cards = new ArrayList<>();
 
         for (String value : values) {
-            for (char suit : suits) {
+            for (Character suit : suits) {
                 cards.add(new Card(value, suit));
             }
         }
