@@ -1,25 +1,34 @@
 package edu.gonzaga;
 
+import java.awt.CardLayout;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
 public class GUIManager {
-    // StartScreen startScreen = new StartScreen();
-    // startScreen.runGUI();
 
-    // void runGUI() {
-    //     System.out.println("Starting Game");
-    //     setupGUI();
+    private JFrame mainFrame;
+    private CardLayout cardLayout;
+    private JPanel container;
 
-    //     // These methods are to show you how it works
-    //     // Once you get started working, you can comment them out so they don't
-    //     //  mess up your own code.
-    //     //putDemoDefaultValuesInGUI();
-    //     addDemoButtonCallbackHandlers();
+    public GUIManager() {
+        mainFrame = new JFrame("Blackjack");
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainFrame.setSize(800, 600);
+        
 
-    //     // Right here is where you could methods to add your own callbacks
-    //     // so that you can make the game actually work.
+        cardLayout = new CardLayout();
+        container = new JPanel(cardLayout);
 
-    //     // Run the main window - begins GUI activity
-    //     mainWindowFrame.setVisible(true);
-    //     //System.out.println("Done in GUI app");
-    // }
-    
+        // Add screens
+        container.add(new StartScreen(this), "StartScreen");
+        container.add(new BlackjackGame(this), "BlackjackGame");
+
+        mainFrame.add(container);
+        mainFrame.setVisible(true);
+    }
+
+    public void showScreen(String screenName) {
+        cardLayout.show(container, screenName);
+    }
 }

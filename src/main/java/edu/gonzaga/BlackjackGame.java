@@ -11,21 +11,18 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 
 // Blackjack Game Class
-public class BlackjackGame extends JFrame {
+public class BlackjackGame extends JPanel {
     private final JTextArea playerArea;
     private final JTextArea dealerArea;
     private final JLabel statusLabel;
     private final Deck deck;
     private final List<Card> playerHand;
     private final List<Card> dealerHand;
+    
 
-    public BlackjackGame() {
-        setTitle("Blackjack Game");
-        setSize(600, 400);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+    public BlackjackGame(GUIManager manager) {
         setLayout(new BorderLayout());
 
         // Game areas
@@ -44,11 +41,13 @@ public class BlackjackGame extends JFrame {
         JButton hitButton = new JButton("Hit");
         JButton standButton = new JButton("Stand");
         JButton restartButton = new JButton("Restart");
+        JButton endButton = new JButton("Quit Game");
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(hitButton);
         buttonPanel.add(standButton);
         buttonPanel.add(restartButton);
+        buttonPanel.add(endButton);
 
         add(buttonPanel, BorderLayout.SOUTH);
 
@@ -62,6 +61,7 @@ public class BlackjackGame extends JFrame {
         hitButton.addActionListener(e -> hit());
         standButton.addActionListener(e -> stand());
         restartButton.addActionListener(e -> startGame());
+        endButton.addActionListener(e -> manager.showScreen("StartScreen"));
     }
 
     private void startGame() {
@@ -141,10 +141,5 @@ public class BlackjackGame extends JFrame {
         return sb.toString();
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            BlackjackGame game = new BlackjackGame();
-            game.setVisible(true);
-        });
-    }
+
 }
