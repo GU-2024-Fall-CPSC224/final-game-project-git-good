@@ -9,11 +9,11 @@ public class Player {
      */
     public Player(String name, Integer balance) {
         this.name = name;
-        this.balance = 10000;
+        this.balance = 1000;
     }
 
     public int getBalance() {
-        return balance;
+        return balance != null ? balance : 0;
     }
 
     public void setBalance(int balance) {
@@ -21,11 +21,17 @@ public class Player {
     }
 
     public void adjustBalance(int amount) {
-        this.balance += amount;
+        if (balance != null) {
+            this.balance += amount;
+        } else {
+            this.balance = amount;
+        }
     }
 
     /*
      * Constructor
      */
-    public Player(){}
+    public Player(){
+        this.balance = 1000;
+    }
 }
