@@ -18,6 +18,7 @@ public class BlackjackGame extends JPanel {
     private final JTextArea dealerArea;
     private final JButton hitButton;
     private final JButton standButton;
+    private final JButton betButton = new JButton("Place Bet");
     private final JLabel statusLabel;
     private final Deck deck;
     private final List<Card> playerHand;
@@ -36,6 +37,7 @@ public class BlackjackGame extends JPanel {
 
     // Predefined bet amounts
     private final int[] predefinedBets = {10, 20, 50, 100, 200};
+    private List<Integer> balanceChanges = new ArrayList<>();
 
     public BlackjackGame(GUIManager manager) {
         setLayout(new BorderLayout());
@@ -61,7 +63,6 @@ public class BlackjackGame extends JPanel {
 
         this.hitButton = new JButton("Hit");
         this.standButton = new JButton("Stand");
-        JButton betButton = new JButton("Place Bet");
         JButton restartButton = new JButton("Restart");
         JButton endButton = new JButton("Finish Game");
 
@@ -70,14 +71,12 @@ public class BlackjackGame extends JPanel {
         buttonPanel.add(restartButton);
         buttonPanel.add(endButton);
         buttonPanel.add(betButton);
+        buttonPanel.add(continueButton);
 
-        // Disable buttons so betting is first
         hitButton.setEnabled(false);
         standButton.setEnabled(false);
         restartButton.setEnabled(false);
-
         continueButton.setEnabled(false);
-        buttonPanel.add(continueButton);
 
         add(buttonPanel, BorderLayout.SOUTH);
         add(balanceLabel, BorderLayout.NORTH);
@@ -95,17 +94,16 @@ public class BlackjackGame extends JPanel {
         betButton.addActionListener(e -> showBetOptions());
         restartButton.addActionListener(e -> startGame());
         endButton.addActionListener(e -> {
-            manager.setClosingScreenData(roundResults);
+            manager.setClosingScreenData(roundResults, balanceChanges);
             manager.showScreen("ClosingScreen");
         });
         continueButton.addActionListener(e -> nextRound());
     }
 
     private void showBetOptions() {
-        // Hide the original button panel
+
         remove(buttonPanel);
         
-        // Create buttons for predefined bets
         betPanel.removeAll();
         for (int betAmount : predefinedBets) {
             JButton betOption = new JButton("$" + betAmount);
@@ -113,7 +111,6 @@ public class BlackjackGame extends JPanel {
             betPanel.add(betOption);
         }
         
-        // Add bet panel with options
         add(betPanel, BorderLayout.SOUTH);
         revalidate();
         repaint();
@@ -149,6 +146,7 @@ public class BlackjackGame extends JPanel {
     
 
     public void startGame() {
+        roundResults.clear();
         resetBet();
         roundCount = 1;
         playerHand.clear();
@@ -164,24 +162,16 @@ public class BlackjackGame extends JPanel {
         statusLabel.setText("Round " + roundCount + ": Your move!");
     }
 
-    private void updateBalance(boolean result) {
-        // Win case
+    private void updateBalance(boolean result, int balanceChange) {
+        // Update player's balance and notify the closing screen about the change
         if (result) {
-            player.adjustBalance(bet * 2); 
-            statusLabel.setText("You win! Balance: $" + player.getBalance());
+            player.adjustBalance(balanceChange);
+        } else {
+            player.adjustBalance(-balanceChange);
         }
-        // Loss case
-        else if (bet > 0) {
-            player.adjustBalance(-bet); 
-            statusLabel.setText("You lose! Balance: $" + player.getBalance());
-        }
-        // Tie case
-        else {
-            statusLabel.setText("Push! Balance: $" + player.getBalance());
-        }
-        bet = 0;
         updateBalanceDisplay();
     }
+    
 
     private void resetBet() {
         bet = 0;
@@ -209,13 +199,14 @@ public class BlackjackGame extends JPanel {
     }
 
     private void blackjackCheck() {
+        int balanceChange = bet;
         if (calculateHandValue(playerHand) == 21) {
             statusLabel.setText("Blackjack! You win!");
             hitButton.setEnabled(false);
             standButton.setEnabled(false);
             continueButton.setEnabled(true);
             boolean result = true;
-            updateBalance(result);
+            updateBalance(result, balanceChange);
         }
     }
 
@@ -224,53 +215,60 @@ public class BlackjackGame extends JPanel {
         int dealerValue = calculateHandValue(dealerHand);
         boolean result = false;
         String winner;
+        int balanceChange = 0; // This will track the balance change for this round
+    
         if (playerValue > 21) {
             statusLabel.setText("You busted! Dealer wins.");
             hitButton.setEnabled(false);
             standButton.setEnabled(false);
-            result = false;
             continueButton.setEnabled(true);
+            result = false;
             winner = "Dealer";
+            balanceChange = -bet; // Losing bet
         } else if (dealerValue > 21) {
             statusLabel.setText("Dealer busted! You win!");
             hitButton.setEnabled(false);
             standButton.setEnabled(false);
-            result = true;
-            updateBalance(result);
             continueButton.setEnabled(true);
+            result = true;
             winner = "Player";
+            balanceChange = bet; // Winning bet
         } else if (playerValue > dealerValue) {
             statusLabel.setText("You win!");
             hitButton.setEnabled(false);
             standButton.setEnabled(false);
-            result = true;
-            updateBalance(result);
             continueButton.setEnabled(true);
+            result = true;
             winner = "Player";
+            balanceChange = bet; // Winning bet
         } else if (playerValue < dealerValue) {
             statusLabel.setText("Dealer wins!");
             hitButton.setEnabled(false);
             standButton.setEnabled(false);
-            result = false;
             continueButton.setEnabled(true);
+            result = false;
             winner = "Dealer";
+            balanceChange = -bet; // Losing bet
         } else {
             statusLabel.setText("Push!");
             hitButton.setEnabled(false);
             standButton.setEnabled(false);
             continueButton.setEnabled(true);
             winner = "Push";
+            balanceChange = 0; // No change for a push
         }
-
-        updateBalance(result);
-
+    
+        updateBalance(result, balanceChange); // Update balance after round
+    
         roundResults.add(new String[]{
             String.valueOf(roundCount),
             String.valueOf(playerValue),
             String.valueOf(dealerValue),
             winner
         });
+        balanceChanges.add(balanceChange); // Add the balance change for this round
     }
+    
 
     private int calculateHandValue(List<Card> hand) {
         int totalValue = 0;
@@ -335,6 +333,7 @@ public class BlackjackGame extends JPanel {
             hitButton.setEnabled(false);
             standButton.setEnabled(false);
             continueButton.setEnabled(false);
+            betButton.setEnabled(false);
             return;
         }
         roundCount++;

@@ -44,9 +44,9 @@ public class GUIManager {
         cardLayout.show(container, screenName);
     }
 
-    public void setClosingScreenData(List<String[]> roundResults) {
+    public void setClosingScreenData(List<String[]> roundResults, List<Integer> balanceChanges) {
         closingScreen.clearTableData();
-        closingScreen.updateTableData(roundResults);
+        closingScreen.updateTableData(roundResults, balanceChanges);
     }
 
     // Method to get a screen by its name

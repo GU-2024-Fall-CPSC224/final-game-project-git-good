@@ -55,15 +55,15 @@ public class ClosingScreen extends JPanel {
         panel.setLayout(new BorderLayout());
         
         // Column names for the table
-        String[] columnNames = {"Round", "Player Score", "Dealer Score", "Round Winner"};
+        String[] columnNames = {"Round", "Player Score", "Dealer Score", "Round Winner", "Balance Change"};
         
         // Example data for several rounds of Blackjack
         Object[][] data = {
-            {"1", "x", "y", "Name"},
-            {"2", "x", "y", "Name"},
-            {"3", "x", "y", "Name"},
-            {"4", "x", "y", "Name"},
-            {"5", "x", "y", "Name"},
+            {"1", "x", "y", "Name", "$0"},
+            {"2", "x", "y", "Name", "$0"},
+            {"3", "x", "y", "Name", "$0"},
+            {"4", "x", "y", "Name", "$0"},
+            {"5", "x", "y", "Name", "$0"},
         };
         
         // Create table model with data and column names
@@ -82,9 +82,10 @@ public class ClosingScreen extends JPanel {
         // Add the table to a scroll pane
         scrollPane = new JScrollPane(resultsTable);
         panel.add(scrollPane, BorderLayout.CENTER);
-
+    
         return panel;
     }
+    
 
     private JPanel genButtonPanel() {
         JPanel panel = new JPanel();
@@ -93,13 +94,23 @@ public class ClosingScreen extends JPanel {
         return panel;
     }
     
-    public void updateTableData(List<String[]> roundResults) {
-    DefaultTableModel tableModel = (DefaultTableModel) resultsTable.getModel();
-    tableModel.setRowCount(0); // Clear existing rows
-    for (String[] result : roundResults) {
-        tableModel.addRow(result);
+    public void updateTableData(List<String[]> roundResults, List<Integer> balanceChanges) {
+        DefaultTableModel tableModel = (DefaultTableModel) resultsTable.getModel();
+        tableModel.setRowCount(0); // Clear existing rows
+        for (int i = 0; i < roundResults.size(); i++) {
+            String[] result = roundResults.get(i);
+            int balanceChange = balanceChanges.get(i); // Balance change for this round
+            String balanceChangeStr = (balanceChange >= 0) ? "$" + balanceChange : "-$" + Math.abs(balanceChange); // Format balance change
+            tableModel.addRow(new Object[]{
+                result[0],        // Round
+                result[1],        // Player Score
+                result[2],        // Dealer Score
+                result[3],        // Round Winner
+                balanceChangeStr  // Balance Change
+            });
         }
     }
+    
 
     public void clearTableData() {
         DefaultTableModel tableModel = (DefaultTableModel) resultsTable.getModel();
