@@ -20,6 +20,10 @@ public class Player {
         this.balance = balance;
     }
 
+    public void adjustBalance(int amount) {
+        this.balance += amount;
+    }
+
     /*
      * Constructor
      */

@@ -30,8 +30,12 @@ public class BlackjackGame extends JPanel {
     private int roundCount;
     private final List<String[]> roundResults = new ArrayList<>();
 
+    private final JLabel balanceLabel = new JLabel("Balance: $1000", SwingConstants.CENTER);
+
     public BlackjackGame(GUIManager manager) {
         setLayout(new BorderLayout());
+
+        player = new Player();
 
         // Game areas
         playerArea = new JTextArea();
@@ -68,6 +72,7 @@ public class BlackjackGame extends JPanel {
         buttonPanel.add(continueButton);
 
         add(buttonPanel, BorderLayout.SOUTH);
+        add(balanceLabel, BorderLayout.NORTH);
 
         // Game setup
         deck = new Deck();
@@ -116,11 +121,14 @@ public class BlackjackGame extends JPanel {
 
     private void updateBalance(boolean result) {
         if (result) {
-            player.setBalance(player.getBalance() + bet * 2);
-        } else if (!result) {
-            player.setBalance(player.getBalance());
+            player.adjustBalance(bet);
+            statusLabel.setText("You win! Balance: " + player.getBalance());
+        } else if (bet > 0) {
+            player.adjustBalance(-bet);
+            statusLabel.setText("You lose! Balance: " + player.getBalance());
         } else {
-            player.setBalance(player.getBalance() + bet);
+            player.adjustBalance(bet);
+            statusLabel.setText("Push! Balance: " + player.getBalance());
         }
         bet = 0;
     }
@@ -170,7 +178,7 @@ public class BlackjackGame extends JPanel {
             statusLabel.setText("You busted! Dealer wins.");
             hitButton.setEnabled(false);
             standButton.setEnabled(false);
-            updateBalance(result);
+            result = false;
             continueButton.setEnabled(true);
             winner = "Dealer";
         } else if (dealerValue > 21) {
@@ -193,17 +201,19 @@ public class BlackjackGame extends JPanel {
             statusLabel.setText("Dealer wins!");
             hitButton.setEnabled(false);
             standButton.setEnabled(false);
-            updateBalance(result);
+            result = false;
             continueButton.setEnabled(true);
             winner = "Dealer";
         } else {
             statusLabel.setText("Push!");
             hitButton.setEnabled(false);
             standButton.setEnabled(false);
-            updateBalance(result);
             continueButton.setEnabled(true);
             winner = "Push";
         }
+
+        updateBalance(result);
+
         roundResults.add(new String[]{
             String.valueOf(roundCount),
             String.valueOf(playerValue),
