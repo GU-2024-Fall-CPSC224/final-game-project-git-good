@@ -13,9 +13,12 @@ public class GUIManager {
     private JPanel container;
 
     // Keep explicit references to each screen
+    private StartScreen startScreen;
+    private BlackjackGame blackjackGame;
     private ClosingScreen closingScreen;
 
     public GUIManager() {
+        
         mainFrame = new JFrame("Blackjack");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setSize(800, 600);
@@ -24,8 +27,8 @@ public class GUIManager {
         container = new JPanel(cardLayout);
 
         // Initialize screens
-        StartScreen startScreen = new StartScreen(this);
-        BlackjackGame blackjackGame = new BlackjackGame(this);
+        startScreen = new StartScreen(this);
+        blackjackGame = new BlackjackGame(this);
         closingScreen = new ClosingScreen(this);
 
         // Add screens to container
@@ -42,7 +45,21 @@ public class GUIManager {
     }
 
     public void setClosingScreenData(List<String[]> roundResults) {
-        // Use the reference to the ClosingScreen instance
+        closingScreen.clearTableData();
         closingScreen.updateTableData(roundResults);
+    }
+
+    // Method to get a screen by its name
+    public JPanel getScreen(String screenName) {
+        switch (screenName) {
+            case "StartScreen":
+                return startScreen;
+            case "BlackjackGame":
+                return blackjackGame;
+            case "ClosingScreen":
+                return closingScreen;
+            default:
+                return null; // Or throw an exception if needed
+        }
     }
 }

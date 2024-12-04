@@ -148,7 +148,7 @@ public class BlackjackGame extends JPanel {
     }
     
 
-    private void startGame() {
+    public void startGame() {
         resetBet();
         roundCount = 1;
         playerHand.clear();
@@ -351,5 +351,7 @@ public class BlackjackGame extends JPanel {
         updateAreas();
         statusLabel.setText("Round " + roundCount + ": Your move!");
     }
+
+    
 
 }

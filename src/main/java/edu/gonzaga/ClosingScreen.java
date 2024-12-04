@@ -101,4 +101,9 @@ public class ClosingScreen extends JPanel {
         }
     }
 
+    public void clearTableData() {
+        DefaultTableModel tableModel = (DefaultTableModel) resultsTable.getModel();
+        tableModel.setRowCount(0);
+    }
+
 }

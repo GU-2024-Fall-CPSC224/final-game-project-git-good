@@ -1,4 +1,6 @@
 package edu.gonzaga;
+import edu.gonzaga.GUIManager;
+import edu.gonzaga.BlackjackGame;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -43,6 +45,7 @@ public class StartScreen extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 System.out.println("Switching to BlackjackGame");
                 manager.showScreen("BlackjackGame");
+                ((BlackjackGame) manager.getScreen("BlackjackGame")).startGame();
             }
         });
 
