@@ -111,6 +111,7 @@ public class BlackjackGame extends JPanel {
             statusLabel.setText("Blackjack! You win!");
             hitButton.setEnabled(false);
             standButton.setEnabled(false);
+            continueButton.setEnabled(true);
         }
     }
 
@@ -220,7 +221,7 @@ public class BlackjackGame extends JPanel {
         dealerHand.add(deck.draw());
         hitButton.setEnabled(true);
         standButton.setEnabled(true);
-        continueButton.setEnabled(false); // Disable next round button
+        continueButton.setEnabled(false);
         updateAreas();
         statusLabel.setText("Round " + roundCount + ": Your move!");
     }
