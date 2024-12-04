@@ -21,7 +21,8 @@ public class BlackjackGame extends JPanel {
     private final Deck deck;
     private final List<Card> playerHand;
     private final List<Card> dealerHand;
-    
+    private final JButton continueButton = new JButton("Next Round");
+    private int roundCount;
 
     public BlackjackGame(GUIManager manager) {
         setLayout(new BorderLayout());
@@ -50,12 +51,16 @@ public class BlackjackGame extends JPanel {
         buttonPanel.add(restartButton);
         buttonPanel.add(endButton);
 
+        continueButton.setEnabled(false);
+        buttonPanel.add(continueButton);
+
         add(buttonPanel, BorderLayout.SOUTH);
 
         // Game setup
         deck = new Deck();
         playerHand = new ArrayList<>();
         dealerHand = new ArrayList<>();
+        roundCount = 1;
         startGame();
 
         // Button actions
@@ -63,9 +68,11 @@ public class BlackjackGame extends JPanel {
         standButton.addActionListener(e -> stand());
         restartButton.addActionListener(e -> startGame());
         endButton.addActionListener(e -> manager.showScreen("ClosingScreen"));
+        continueButton.addActionListener(e -> nextRound());
     }
 
     private void startGame() {
+        roundCount = 1;
         playerHand.clear();
         dealerHand.clear();
         deck.shuffle();
@@ -76,7 +83,7 @@ public class BlackjackGame extends JPanel {
         hitButton.setEnabled(true);
         standButton.setEnabled(true);
         updateAreas();
-        statusLabel.setText("Your move!");
+        statusLabel.setText("Round " + roundCount + ": Your move!");
     }
 
     private void hit() {
@@ -85,6 +92,7 @@ public class BlackjackGame extends JPanel {
             statusLabel.setText("You busted! Dealer wins.");
             hitButton.setEnabled(false);
             standButton.setEnabled(false);
+            continueButton.setEnabled(true);
         }
         blackjackCheck();
         updateAreas();
@@ -114,22 +122,27 @@ public class BlackjackGame extends JPanel {
             statusLabel.setText("You busted! Dealer wins.");
             hitButton.setEnabled(false);
             standButton.setEnabled(false);
+            continueButton.setEnabled(true);
         } else if (dealerValue > 21) {
             statusLabel.setText("Dealer busted! You win!");
             hitButton.setEnabled(false);
             standButton.setEnabled(false);
+            continueButton.setEnabled(true);
         } else if (playerValue > dealerValue) {
             statusLabel.setText("You win!");
             hitButton.setEnabled(false);
             standButton.setEnabled(false);
+            continueButton.setEnabled(true);
         } else if (playerValue < dealerValue) {
             statusLabel.setText("Dealer wins!");
             hitButton.setEnabled(false);
             standButton.setEnabled(false);
+            continueButton.setEnabled(true);
         } else {
             statusLabel.setText("Push!");
             hitButton.setEnabled(false);
             standButton.setEnabled(false);
+            continueButton.setEnabled(true);
         }
     }
 
@@ -189,5 +202,27 @@ public class BlackjackGame extends JPanel {
         return cardTopBottom + "\n" + cardMiddle + "\n" + cardSuitLine + "\n" + cardTopBottom;
     }
 
+    private void nextRound(){
+        if (roundCount >= 5) {
+            statusLabel.setText("Game Over! Thanks for playing.");
+            hitButton.setEnabled(false);
+            standButton.setEnabled(false);
+            continueButton.setEnabled(false);
+            return;
+        }
+        roundCount++;
+        playerHand.clear();
+        dealerHand.clear();
+        deck.shuffle();
+        playerHand.add(deck.draw());
+        playerHand.add(deck.draw());
+        dealerHand.add(deck.draw());
+        dealerHand.add(deck.draw());
+        hitButton.setEnabled(true);
+        standButton.setEnabled(true);
+        continueButton.setEnabled(false); // Disable next round button
+        updateAreas();
+        statusLabel.setText("Round " + roundCount + ": Your move!");
+    }
 
 }
