@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -91,4 +92,13 @@ public class ClosingScreen extends JPanel {
         panel.add(playButton);
         return panel;
     }
+    
+    public void updateTableData(List<String[]> roundResults) {
+    DefaultTableModel tableModel = (DefaultTableModel) resultsTable.getModel();
+    tableModel.setRowCount(0); // Clear existing rows
+    for (String[] result : roundResults) {
+        tableModel.addRow(result);
+        }
+    }
+
 }

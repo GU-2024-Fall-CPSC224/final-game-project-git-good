@@ -7,10 +7,18 @@ public class Player {
     /*
      * Constructor
      */
-    public Player(String name){
+    public Player(String name, Integer balance) {
         this.name = name;
+        this.balance = 10000;
     }
 
+    public int getBalance() {
+        return balance;
+    }
+
+    public void setBalance(int balance) {
+        this.balance = balance;
+    }
 
     /*
      * Constructor

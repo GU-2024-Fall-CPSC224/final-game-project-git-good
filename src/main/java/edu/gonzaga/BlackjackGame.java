@@ -9,6 +9,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 // Blackjack Game Class
@@ -21,8 +22,13 @@ public class BlackjackGame extends JPanel {
     private final Deck deck;
     private final List<Card> playerHand;
     private final List<Card> dealerHand;
+    private int bet;
+    private JTextField betField;
+    private Player player;
+    
     private final JButton continueButton = new JButton("Next Round");
     private int roundCount;
+    private final List<String[]> roundResults = new ArrayList<>();
 
     public BlackjackGame(GUIManager manager) {
         setLayout(new BorderLayout());
@@ -30,6 +36,7 @@ public class BlackjackGame extends JPanel {
         // Game areas
         playerArea = new JTextArea();
         dealerArea = new JTextArea();
+        betField = new JTextField(5);
         statusLabel = new JLabel("Welcome to Blackjack!", SwingConstants.CENTER);
 
         JPanel gamePanel = new JPanel(new GridLayout(1, 2));
@@ -42,6 +49,7 @@ public class BlackjackGame extends JPanel {
         // Buttons
         this.hitButton = new JButton("Hit");
         this.standButton = new JButton("Stand");
+        JButton betButton = new JButton("Place Bet");
         JButton restartButton = new JButton("Restart");
         JButton endButton = new JButton("Finish Game");
 
@@ -50,6 +58,11 @@ public class BlackjackGame extends JPanel {
         buttonPanel.add(standButton);
         buttonPanel.add(restartButton);
         buttonPanel.add(endButton);
+        buttonPanel.add(betButton);
+        // disable buttons so betting is first
+        hitButton.setEnabled(false);
+        standButton.setEnabled(false);
+        restartButton.setEnabled(false);
 
         continueButton.setEnabled(false);
         buttonPanel.add(continueButton);
@@ -66,12 +79,17 @@ public class BlackjackGame extends JPanel {
         // Button actions
         hitButton.addActionListener(e -> hit());
         standButton.addActionListener(e -> stand());
+        betButton.addActionListener(e -> placeBet(Integer.parseInt(betField.getText())));
         restartButton.addActionListener(e -> startGame());
-        endButton.addActionListener(e -> manager.showScreen("ClosingScreen"));
+        endButton.addActionListener(e -> {
+            manager.setClosingScreenData(roundResults);
+            manager.showScreen("ClosingScreen");
+        });
         continueButton.addActionListener(e -> nextRound());
     }
 
     private void startGame() {
+        resetBet();
         roundCount = 1;
         playerHand.clear();
         dealerHand.clear();
@@ -84,6 +102,32 @@ public class BlackjackGame extends JPanel {
         standButton.setEnabled(true);
         updateAreas();
         statusLabel.setText("Round " + roundCount + ": Your move!");
+    }
+
+    private void placeBet(int amount) {
+        if (amount > player.getBalance()) {
+            statusLabel.setText("Insufficient balance!");
+        } else {
+            player.setBalance(player.getBalance() - amount);
+            bet = amount;
+            statusLabel.setText("Bet placed: " + bet);
+        }
+    }
+
+    private void updateBalance(boolean result) {
+        if (result) {
+            player.setBalance(player.getBalance() + bet * 2);
+        } else if (!result) {
+            player.setBalance(player.getBalance());
+        } else {
+            player.setBalance(player.getBalance() + bet);
+        }
+        bet = 0;
+    }
+
+    private void resetBet() {
+        bet = 0;
+        betField.setText("Enter Bet Amount");
     }
 
     private void hit() {
@@ -112,39 +156,60 @@ public class BlackjackGame extends JPanel {
             hitButton.setEnabled(false);
             standButton.setEnabled(false);
             continueButton.setEnabled(true);
+            boolean result = true;
+            updateBalance(result);
         }
     }
 
     private void determineWinner() {
         int playerValue = calculateHandValue(playerHand);
         int dealerValue = calculateHandValue(dealerHand);
-    
+        boolean result = false;
+        String winner;
         if (playerValue > 21) {
             statusLabel.setText("You busted! Dealer wins.");
             hitButton.setEnabled(false);
             standButton.setEnabled(false);
+            updateBalance(result);
             continueButton.setEnabled(true);
+            winner = "Dealer";
         } else if (dealerValue > 21) {
             statusLabel.setText("Dealer busted! You win!");
             hitButton.setEnabled(false);
             standButton.setEnabled(false);
+            result = true;
+            updateBalance(result);
             continueButton.setEnabled(true);
+            winner = "Player";
         } else if (playerValue > dealerValue) {
             statusLabel.setText("You win!");
             hitButton.setEnabled(false);
             standButton.setEnabled(false);
+            result = true;
+            updateBalance(result);
             continueButton.setEnabled(true);
+            winner = "Player";
         } else if (playerValue < dealerValue) {
             statusLabel.setText("Dealer wins!");
             hitButton.setEnabled(false);
             standButton.setEnabled(false);
+            updateBalance(result);
             continueButton.setEnabled(true);
+            winner = "Dealer";
         } else {
             statusLabel.setText("Push!");
             hitButton.setEnabled(false);
             standButton.setEnabled(false);
+            updateBalance(result);
             continueButton.setEnabled(true);
+            winner = "Push";
         }
+        roundResults.add(new String[]{
+            String.valueOf(roundCount),
+            String.valueOf(playerValue),
+            String.valueOf(dealerValue),
+            winner
+        });
     }
 
     private int calculateHandValue(List<Card> hand) {
@@ -194,10 +259,10 @@ public class BlackjackGame extends JPanel {
         String suit = card.getSuit(); // Get suit (Hearts, Diamonds, Clubs, Spades)
         
         String cardTopBottom = "+-----+";
-        String cardMiddle = "|  " + rank + "  |"; // Rank in the middle of the card
+        String cardMiddle = " |  " + rank + "    |"; // Rank in the middle of the card
         
         // Adjust for the suit representation
-        String cardSuitLine = "|  " + suit.charAt(0) + "  |"; // First letter of suit (H, D, C, S)
+        String cardSuitLine = " |  " + suit.charAt(0) + "   |"; // First letter of suit (H, D, C, S)
     
         // Combine the card lines into a card shape
         return cardTopBottom + "\n" + cardMiddle + "\n" + cardSuitLine + "\n" + cardTopBottom;
