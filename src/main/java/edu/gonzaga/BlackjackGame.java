@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -43,7 +42,7 @@ public class BlackjackGame extends JPanel {
         this.hitButton = new JButton("Hit");
         this.standButton = new JButton("Stand");
         JButton restartButton = new JButton("Restart");
-        JButton endButton = new JButton("Quit Game");
+        JButton endButton = new JButton("Finish Game");
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(hitButton);
@@ -63,7 +62,7 @@ public class BlackjackGame extends JPanel {
         hitButton.addActionListener(e -> hit());
         standButton.addActionListener(e -> stand());
         restartButton.addActionListener(e -> startGame());
-        endButton.addActionListener(e -> manager.showScreen("StartScreen"));
+        endButton.addActionListener(e -> manager.showScreen("ClosingScreen"));
     }
 
     private void startGame() {
@@ -160,10 +159,34 @@ public class BlackjackGame extends JPanel {
 
     private String handToString(List<Card> hand) {
         StringBuilder sb = new StringBuilder();
-        for (Card card : hand) {
-            sb.append(card).append("\n");
+        int cardCount = hand.size();
+        
+        // Display the card as a visual representation in a grid-like format
+        for (int i = 0; i < cardCount; i++) {
+            Card card = hand.get(i);
+            String cardString = formatCard(card);
+            
+            sb.append(cardString);
+            if (i < cardCount - 1) {
+                sb.append("\n"); // Add a line break between cards
+            }
         }
         return sb.toString();
+    }
+
+    private String formatCard(Card card) {
+        // Represent the card as a string that visually looks like a card.
+        String rank = card.getValueStr(); // Get value (Ace, 2, 3, ..., King)
+        String suit = card.getSuit(); // Get suit (Hearts, Diamonds, Clubs, Spades)
+        
+        String cardTopBottom = "+-----+";
+        String cardMiddle = "|  " + rank + "  |"; // Rank in the middle of the card
+        
+        // Adjust for the suit representation
+        String cardSuitLine = "|  " + suit.charAt(0) + "  |"; // First letter of suit (H, D, C, S)
+    
+        // Combine the card lines into a card shape
+        return cardTopBottom + "\n" + cardMiddle + "\n" + cardSuitLine + "\n" + cardTopBottom;
     }
 
 

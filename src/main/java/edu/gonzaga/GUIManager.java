@@ -23,6 +23,7 @@ public class GUIManager {
         // Add screens
         container.add(new StartScreen(this), "StartScreen");
         container.add(new BlackjackGame(this), "BlackjackGame");
+        container.add(new ClosingScreen(this), "ClosingScreen");
 
         mainFrame.add(container);
         mainFrame.setVisible(true);

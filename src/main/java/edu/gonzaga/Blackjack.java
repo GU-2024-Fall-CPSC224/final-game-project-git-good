@@ -19,7 +19,6 @@ public class Blackjack {
         GUIManager GUI = new GUIManager();
 
         GUI.showScreen("StartScreen");
-        //GUI.showScreen("BlackjackGame");
         
 
     }

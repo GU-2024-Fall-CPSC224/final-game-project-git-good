@@ -26,4 +26,13 @@ class Card {
                 return Integer.valueOf(value);
         }
     }
+
+    public String getValueStr(){
+        return value;
+    }
+
+
+    public String getSuit(){
+        return suit.toString();
+    }
 }
