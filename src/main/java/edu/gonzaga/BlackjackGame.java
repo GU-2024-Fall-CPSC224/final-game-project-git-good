@@ -35,6 +35,8 @@ public class BlackjackGame extends JPanel {
     private final JPanel buttonPanel;
     private final JPanel betPanel;
 
+    private boolean dealerCardRevealed = false;
+
     // Predefined bet amounts
     private final int[] predefinedBets = {10, 20, 50, 100, 200};
     private List<Integer> balanceChanges = new ArrayList<>();
@@ -182,11 +184,16 @@ public class BlackjackGame extends JPanel {
 
     private void stand() {
         revealDealerHoleCard();
+    
         while (calculateHandValue(dealerHand) < 17 || 
-       (calculateHandValue(dealerHand) <= calculateHandValue(playerHand) && calculateHandValue(playerHand) <= 21)) {
-        dealerHand.add(deck.draw());
-    }
-        revealDealerHoleCard();
+               (calculateHandValue(dealerHand) <= calculateHandValue(playerHand) && calculateHandValue(playerHand) <= 21)) {
+            dealerHand.add(deck.draw());
+        }
+    
+        if (calculateHandValue(dealerHand) > 21) {
+            revealDealerHoleCard(); 
+        }
+        
         determineWinner();
         updateAreas();
     }
@@ -203,7 +210,7 @@ public class BlackjackGame extends JPanel {
     }
 
     private void determineWinner() {
-        revealDealerHoleCard(); // Ensure the dealer's score is updated
+        revealDealerHoleCard();
     
         int playerValue = calculateHandValue(playerHand);
         int dealerValue = calculateHandValue(dealerHand);
@@ -215,10 +222,10 @@ public class BlackjackGame extends JPanel {
             result = false;
             winner = "Dealer";
         } else if (dealerValue > 21) {
-            revealDealerHoleCard();
             statusLabel.setText("Dealer busted! You win!");
             result = true;
             winner = "Player";
+            continueButton.setEnabled(true);
         } else if (playerValue > dealerValue) {
             statusLabel.setText("You win!");
             result = true;
@@ -240,7 +247,6 @@ public class BlackjackGame extends JPanel {
             winner
         });
     
-        // Update balance based on the outcome
         updateBalance(result);
         hitButton.setEnabled(false);
         standButton.setEnabled(false);
@@ -268,29 +274,31 @@ public class BlackjackGame extends JPanel {
     }
 
     private void updateAreas() {
-        playerArea.setText("Your Hand:\n" + handToString(playerHand) + "\nValue: " + calculateHandValue(playerHand));
-        dealerArea.setText("Dealer's Hand:\n" + handToString(dealerHand) + 
-    "\nValue: " + (hitButton.isEnabled() ? dealerHand.get(0).getValue() : calculateHandValue(dealerHand)));
+        playerArea.setText("Your Hand:\n" + handToString(playerHand, true) + 
+            "\nValue: " + calculateHandValue(playerHand));
+        dealerArea.setText("Dealer's Hand:\n" + 
+            handToString(dealerHand, dealerCardRevealed) + 
+            "\nValue: " + (dealerCardRevealed ? calculateHandValue(dealerHand) : dealerHand.get(0).getValue()));
         updateBalanceDisplay();
     }
+    
 
     private void revealDealerHoleCard() {
-        int dealerValue = calculateHandValue(dealerHand);
-        dealerArea.setText("Dealer's Hand:\n" + handToString(dealerHand) + "\nValue: " + dealerValue);
+        dealerCardRevealed = true;
+        updateAreas();
     }
 
-    private String handToString(List<Card> hand) {
+    private String handToString(List<Card> hand, boolean revealAll) {
         StringBuilder sb = new StringBuilder();
     
         for (int i = 0; i < hand.size(); i++) {
             Card card = hand.get(i);
             String cardString;
     
-            if (dealerHand == hand && i == 1 && hitButton.isEnabled()) {
-                
+            if (dealerHand == hand && i == 1 && !revealAll) {
+                // Keep the second card hidden if not revealed
                 cardString = "?????\n?-----?\n?-----?\n?????";
             } else {
-                
                 cardString = formatCard(card);
             }
     
@@ -318,6 +326,7 @@ public class BlackjackGame extends JPanel {
     }
 
     private void nextRound(){
+        dealerCardRevealed = false;
         if (roundCount >= 5) {
             statusLabel.setText("Game Over! Thanks for playing.");
             hitButton.setEnabled(false);
