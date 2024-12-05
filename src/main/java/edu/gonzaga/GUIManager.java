@@ -6,7 +6,7 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-public class GUIManager {
+public class GUIManager {   
 
     private JFrame mainFrame;
     private CardLayout cardLayout;

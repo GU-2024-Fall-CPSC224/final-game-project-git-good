@@ -181,9 +181,11 @@ public class BlackjackGame extends JPanel {
     }
 
     private void stand() {
-        while (calculateHandValue(dealerHand) < 12 || calculateHandValue(playerHand) > calculateHandValue(dealerHand)) {
-            dealerHand.add(deck.draw());
-        }
+        revealDealerHoleCard();
+        while (calculateHandValue(dealerHand) < 17 || 
+       (calculateHandValue(dealerHand) <= calculateHandValue(playerHand) && calculateHandValue(playerHand) <= 21)) {
+        dealerHand.add(deck.draw());
+    }
         revealDealerHoleCard();
         determineWinner();
         updateAreas();
@@ -201,53 +203,34 @@ public class BlackjackGame extends JPanel {
     }
 
     private void determineWinner() {
+        revealDealerHoleCard(); // Ensure the dealer's score is updated
+    
         int playerValue = calculateHandValue(playerHand);
         int dealerValue = calculateHandValue(dealerHand);
         boolean result = false;
         String winner;
-        int balanceChange = 0; // This will track the balance change for this round
-       
+    
         if (playerValue > 21) {
             statusLabel.setText("You busted! Dealer wins.");
-            hitButton.setEnabled(false);
-            standButton.setEnabled(false);
-            continueButton.setEnabled(true);
             result = false;
             winner = "Dealer";
-            updateBalance(false);
         } else if (dealerValue > 21) {
+            revealDealerHoleCard();
             statusLabel.setText("Dealer busted! You win!");
-            hitButton.setEnabled(false);
-            standButton.setEnabled(false);
-            continueButton.setEnabled(true);
             result = true;
             winner = "Player";
-            updateBalance(true);
         } else if (playerValue > dealerValue) {
             statusLabel.setText("You win!");
-            hitButton.setEnabled(false);
-            standButton.setEnabled(false);
-            continueButton.setEnabled(true);
             result = true;
             winner = "Player";
-            updateBalance(true);
         } else if (playerValue < dealerValue) {
             statusLabel.setText("Dealer wins!");
-            hitButton.setEnabled(false);
-            standButton.setEnabled(false);
-            continueButton.setEnabled(true);
-            
             result = false;
             winner = "Dealer";
-            updateBalance(false);
         } else {
             statusLabel.setText("Push!");
-            hitButton.setEnabled(false);
-            standButton.setEnabled(false);
-            continueButton.setEnabled(true);
-            
+            result = false;
             winner = "Push";
-            updateBalance(true);
         }
     
         roundResults.add(new String[]{
@@ -256,7 +239,12 @@ public class BlackjackGame extends JPanel {
             String.valueOf(dealerValue),
             winner
         });
-        balanceChanges.add(balanceChange); // Add the balance change for this round
+    
+        // Update balance based on the outcome
+        updateBalance(result);
+        hitButton.setEnabled(false);
+        standButton.setEnabled(false);
+        continueButton.setEnabled(true);
     }
     
 
@@ -281,31 +269,34 @@ public class BlackjackGame extends JPanel {
 
     private void updateAreas() {
         playerArea.setText("Your Hand:\n" + handToString(playerHand) + "\nValue: " + calculateHandValue(playerHand));
-        dealerArea.setText("Dealer's Hand:\n" + handToString(dealerHand) + "\nValue: " + dealerHand.get(0).getValue());
+        dealerArea.setText("Dealer's Hand:\n" + handToString(dealerHand) + 
+    "\nValue: " + (hitButton.isEnabled() ? dealerHand.get(0).getValue() : calculateHandValue(dealerHand)));
         updateBalanceDisplay();
     }
 
     private void revealDealerHoleCard() {
-        dealerArea.setText("Dealer's Hand:\n" + handToString(dealerHand) + "\nValue: " + calculateHandValue(dealerHand));
+        int dealerValue = calculateHandValue(dealerHand);
+        dealerArea.setText("Dealer's Hand:\n" + handToString(dealerHand) + "\nValue: " + dealerValue);
     }
 
     private String handToString(List<Card> hand) {
         StringBuilder sb = new StringBuilder();
-        int cardCount = hand.size();
-        
-        // Display the card as a visual representation in a grid-like format
-        for (int i = 0; i < cardCount; i++) {
+    
+        for (int i = 0; i < hand.size(); i++) {
             Card card = hand.get(i);
-            String cardString = formatCard(card);
-
-            if (dealerHand.contains(card) && i == 1) {
-                // Hide the dealer's second card
+            String cardString;
+    
+            if (dealerHand == hand && i == 1 && hitButton.isEnabled()) {
+                
                 cardString = "?????\n?-----?\n?-----?\n?????";
+            } else {
+                
+                cardString = formatCard(card);
             }
-            
+    
             sb.append(cardString);
-            if (i < cardCount - 1) {
-                sb.append("\n"); // Add a line break between cards
+            if (i < hand.size() - 1) {
+                sb.append("\n"); // Add line breaks between cards
             }
         }
         return sb.toString();
