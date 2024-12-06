@@ -17,7 +17,7 @@ class Card {
     public Integer getValue() {
         switch (value) {
             case "A":
-                return 1;
+                return 11;
             case "J":
             case "Q":
             case "K":
