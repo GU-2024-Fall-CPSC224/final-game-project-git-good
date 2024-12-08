@@ -1,17 +1,23 @@
 package edu.gonzaga;
 
-class Card {
+public class Card {
     private final String value;
     private final Character suit;
-    
+    private final String imagePath;
 
-    public Card(String value, Character suit) {
+    public Card(String value, Character suit, String imagePath) {
         this.value = value;
         this.suit = suit;
+        this.imagePath = imagePath;
     }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
     @Override
     public String toString() {
-        return value + " of " + suit;
+        return value + suit + " (" + imagePath + ")";
     }
 
     public Integer getValue() {

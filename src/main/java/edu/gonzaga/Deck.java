@@ -17,19 +17,54 @@ public class Deck {
     private final Character[] suits = {HEARTS, DIAMONDS, CLUBS, SPADES};
 
     private final ArrayList<Card> cards;
-    
-    /*
-     * Constructor
-     */
-    public Deck(){
-        cards = new ArrayList<>();
 
+    public Deck() {
+        cards = new ArrayList<>();
         for (String value : values) {
             for (Character suit : suits) {
-                cards.add(new Card(value, suit));
+                String imagePath = generateImagePath(value, suit);
+                cards.add(new Card(value, suit, imagePath));
             }
         }
     }
+
+    private String generateImagePath(String value, Character suit) {
+        String suitName;
+        String valueName;
+        switch (suit) {
+            case '\u2665':
+                suitName = "hearts";
+                break;
+            case '\u2666':
+                suitName = "diamonds";
+                break;
+            case '\u2663':
+                suitName = "clubs";
+                break;
+            case '\u2660':
+                suitName = "spades";
+                break;
+            default:
+                suitName = "unknown";
+                break;
+        }
+        switch (value) {
+            case "J":
+                valueName = "jack";
+                break;
+            case "Q":
+                valueName = "queen";
+                break;
+            case "K":
+                valueName = "king";
+                break;
+            default:
+                valueName = "unknown";
+                break;
+        }
+        return "PNG-cards-1.3/" + value + "_of_" + suitName + ".png";
+    }
+
 
     /*
      * Shuffle method
@@ -51,10 +86,11 @@ public class Deck {
         cards.clear();
         for (String value : values) {
             for (Character suit : suits) {
-                cards.add(new Card(value, suit));
+                String imagePath = generateImagePath(value, suit); // Generate the image path
+                cards.add(new Card(value, suit, imagePath));       // Create and add the card with image
             }
         }
-        Collections.shuffle(cards);
+        Collections.shuffle(cards); // Shuffle the deck after repopulating
     }
 
     /*

@@ -4,6 +4,7 @@ import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -13,7 +14,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 // Blackjack Game Class
-public class BlackjackGame extends JPanel {
+public final class BlackjackGame extends JPanel {
     private final JTextArea playerArea;
     private final JTextArea dealerArea;
     private final JButton hitButton;
@@ -35,6 +36,9 @@ public class BlackjackGame extends JPanel {
     private final JPanel betPanel;
     private int bet;
 
+    private final JPanel playerPanel = new JPanel(new GridLayout(1, 5)); // Player's cards
+    private final JPanel dealerPanel = new JPanel(new GridLayout(1, 5)); // Dealer's cards
+
     private boolean dealerCardRevealed = false;
 
     // Predefined bet amounts
@@ -52,9 +56,9 @@ public class BlackjackGame extends JPanel {
         betField = new JTextField(5);
         statusLabel = new JLabel("Welcome to Blackjack!", SwingConstants.CENTER);
 
-        JPanel gamePanel = new JPanel(new GridLayout(1, 2));
-        gamePanel.add(new JScrollPane(playerArea));
-        gamePanel.add(new JScrollPane(dealerArea));
+        JPanel gamePanel = new JPanel(new GridLayout(2, 1));
+    gamePanel.add(new JScrollPane(dealerPanel)); // Dealer's hand
+    gamePanel.add(new JScrollPane(playerPanel)); // Player's hand
 
         add(gamePanel, BorderLayout.CENTER);
         add(statusLabel, BorderLayout.NORTH);
@@ -278,14 +282,34 @@ public class BlackjackGame extends JPanel {
         
     }
 
-    private void updateAreas() {
-        playerArea.setText("Your Hand:\n" + handToString(playerHand, true) + 
-            "\nValue: " + calculateHandValue(playerHand));
-        dealerArea.setText("Dealer's Hand:\n" + 
-            handToString(dealerHand, dealerCardRevealed) + 
-            "\nValue: " + (dealerCardRevealed ? calculateHandValue(dealerHand) : dealerHand.get(0).getValue()));
-        updateBalanceDisplay();
+    private JLabel createCardLabel(Card card) {
+        String imagePath = card.getImagePath(); // Assume Card class has getImagePath()
+        return new JLabel(new ImageIcon(imagePath));
     }
+
+    private void updateAreas() {
+    playerPanel.removeAll();
+    dealerPanel.removeAll();
+    
+    for (Card card : playerHand) {
+        playerPanel.add(createCardLabel(card));
+    }
+    
+    for (int i = 0; i < dealerHand.size(); i++) {
+        if (i == 1 && !dealerCardRevealed) {
+            dealerPanel.add(new JLabel(new ImageIcon("path/to/card-back.png"))); // Hidden card
+        } else {
+            dealerPanel.add(createCardLabel(dealerHand.get(i)));
+        }
+    }
+    
+    playerPanel.revalidate();
+    playerPanel.repaint();
+    dealerPanel.revalidate();
+    dealerPanel.repaint();
+    
+    updateBalanceDisplay();
+}
     
 
     private void revealDealerHoleCard() {

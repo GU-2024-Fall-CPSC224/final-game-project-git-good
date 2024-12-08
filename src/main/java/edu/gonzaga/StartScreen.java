@@ -4,8 +4,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -15,17 +15,17 @@ import javax.swing.JPanel;
 
 public class StartScreen extends JPanel {
 
-    private JButton playButton;
+    private final JButton playButton;
     private BufferedImage backgroundImage;
 
     public StartScreen(GUIManager manager) {
         // Load the background image
         try {
             backgroundImage = ImageIO.read(getClass().getResource("/bjwelcomescreen.jpg"));
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
             System.out.println("Error: Unable to load background image.");
         }
+
 
         // Set layout for the panel
         setLayout(new BorderLayout());
@@ -52,13 +52,10 @@ public class StartScreen extends JPanel {
         copyrightLabel.setForeground(Color.BLACK);
 
         // Add ActionListener to playButton
-        playButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Switching to BlackjackGame");
-                manager.showScreen("BlackjackGame");
-                ((BlackjackGame) manager.getScreen("BlackjackGame")).startGame();
-            }
+        playButton.addActionListener((ActionEvent e) -> {
+            System.out.println("Switching to BlackjackGame");
+            manager.showScreen("BlackjackGame");
+            ((BlackjackGame) manager.getScreen("BlackjackGame")).startGame();
         });
 
         JPanel buttonPanel = new JPanel();

@@ -8,14 +8,14 @@ import javax.swing.JPanel;
 
 public class GUIManager {   
 
-    private JFrame mainFrame;
-    private CardLayout cardLayout;
-    private JPanel container;
+    private final JFrame mainFrame;
+    private final CardLayout cardLayout;
+    private final JPanel container;
 
     // Keep explicit references to each screen
-    private StartScreen startScreen;
-    private BlackjackGame blackjackGame;
-    private ClosingScreen closingScreen;
+    private final StartScreen startScreen;
+    private final BlackjackGame blackjackGame;
+    private final ClosingScreen closingScreen;
 
     public GUIManager() {
         
