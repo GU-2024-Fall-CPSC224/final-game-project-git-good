@@ -58,6 +58,9 @@ public class Deck {
             case "K":
                 valueName = "king";
                 break;
+            case "A":
+                valueName = "ace";
+                break;
             default:
                 valueName = value;
                 break;
