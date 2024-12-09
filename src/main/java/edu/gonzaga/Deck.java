@@ -59,10 +59,10 @@ public class Deck {
                 valueName = "king";
                 break;
             default:
-                valueName = "unknown";
+                valueName = value;
                 break;
         }
-        return "PNG-cards-1.3/" + value + "_of_" + suitName + ".png";
+        return "PNG-cards-1.3/" + valueName + "_of_" + suitName + ".png";
     }
 
 

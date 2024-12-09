@@ -1,6 +1,8 @@
 package edu.gonzaga;
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,8 +38,8 @@ public final class BlackjackGame extends JPanel {
     private final JPanel betPanel;
     private int bet;
 
-    private final JPanel playerPanel = new JPanel(new GridLayout(1, 5)); // Player's cards
-    private final JPanel dealerPanel = new JPanel(new GridLayout(1, 5)); // Dealer's cards
+    private final JPanel playerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5)); // Horizontal alignment with gaps
+    private final JPanel dealerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5)); // Horizontal alignment with gaps
 
     private boolean dealerCardRevealed = false;
 
@@ -57,8 +59,8 @@ public final class BlackjackGame extends JPanel {
         statusLabel = new JLabel("Welcome to Blackjack!", SwingConstants.CENTER);
 
         JPanel gamePanel = new JPanel(new GridLayout(2, 1));
-    gamePanel.add(new JScrollPane(dealerPanel)); // Dealer's hand
-    gamePanel.add(new JScrollPane(playerPanel)); // Player's hand
+        gamePanel.add(new JScrollPane(dealerPanel)); // Dealer's hand
+        gamePanel.add(new JScrollPane(playerPanel)); // Player's hand
 
         add(gamePanel, BorderLayout.CENTER);
         add(statusLabel, BorderLayout.NORTH);
@@ -265,51 +267,100 @@ public final class BlackjackGame extends JPanel {
     private int calculateHandValue(List<Card> hand) {
         int totalValue = 0;
         int aceCount = 0;
-
+    
+        // Calculate total value and count the number of aces
         for (Card card : hand) {
             totalValue += card.getValue();
-            if (card.toString().contains("A")) {
+            if (card.toString().contains("A")) {  // Assuming Ace has "A" in its string representation
                 aceCount++;
             }
         }
-
+    
+        // Adjust the value of aces (only reduce if totalValue exceeds 21)
         while (totalValue > 21 && aceCount > 0) {
             totalValue -= 10;
             aceCount--;
         }
-
+    
+        // Ensure that if total is 21 and has an Ace counted as 11, it remains 21
+        if (totalValue == 21 && aceCount == 1) {
+            return 21;  // Return 21 immediately if player has an Ace valued at 11
+        }
+    
         return totalValue;
-        
     }
+    
 
     private JLabel createCardLabel(Card card) {
-        String imagePath = card.getImagePath(); // Assume Card class has getImagePath()
-        return new JLabel(new ImageIcon(imagePath));
+        String imagePath = card.getImagePath();
+        ImageIcon originalIcon = new ImageIcon(imagePath);
+    
+        // Define consistent dimensions
+        int targetWidth = 50;
+        int targetHeight = 75;
+    
+        // Ensure consistent aspect ratio
+        Image scaledImage = originalIcon.getImage().getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH);
+        ImageIcon scaledIcon = new ImageIcon(scaledImage);
+    
+        return new JLabel(scaledIcon);
     }
+    
+
+    private JLabel createBackCardLabel() {
+        String backCardPath = "PNG-cards-1.3/back.png";
+        ImageIcon backIcon = new ImageIcon(backCardPath);
+    
+        // Define consistent dimensions
+        int targetWidth = 85;
+        int targetHeight = 93;
+    
+        // Ensure consistent aspect ratio
+        Image scaledBackImage = backIcon.getImage().getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH);
+        ImageIcon scaledBackIcon = new ImageIcon(scaledBackImage);
+    
+        return new JLabel(scaledBackIcon);
+    }
+    
+    
+    
 
     private void updateAreas() {
-    playerPanel.removeAll();
-    dealerPanel.removeAll();
-    
-    for (Card card : playerHand) {
-        playerPanel.add(createCardLabel(card));
-    }
-    
-    for (int i = 0; i < dealerHand.size(); i++) {
-        if (i == 1 && !dealerCardRevealed) {
-            dealerPanel.add(new JLabel(new ImageIcon("path/to/card-back.png"))); // Hidden card
-        } else {
-            dealerPanel.add(createCardLabel(dealerHand.get(i)));
+        playerPanel.removeAll();
+        dealerPanel.removeAll();
+        
+        // Add player's cards
+        for (Card card : playerHand) {
+            playerPanel.add(createCardLabel(card));
         }
+        JLabel playerValueLabel = new JLabel("Player Points: " + calculateHandValue(playerHand));
+        playerPanel.add(playerValueLabel);
+    
+        // Add dealer's cards
+        int dealerHandValue = 0;
+        for (int i = 0; i < dealerHand.size(); i++) {
+            if (i == 1 && !dealerCardRevealed) {
+                dealerPanel.add(createBackCardLabel());
+            } else {
+                dealerPanel.add(createCardLabel(dealerHand.get(i)));
+                dealerHandValue += dealerHand.get(i).getValue();
+            }
+        }
+        JLabel dealerValueLabel = new JLabel("Dealer Points: " + 
+            (dealerCardRevealed ? calculateHandValue(dealerHand) : dealerHandValue));
+        dealerPanel.add(dealerValueLabel);
+    
+        // Refresh panels
+        playerPanel.revalidate();
+        playerPanel.repaint();
+        dealerPanel.revalidate();
+        dealerPanel.repaint();
+    
+        updateBalanceDisplay();
     }
     
-    playerPanel.revalidate();
-    playerPanel.repaint();
-    dealerPanel.revalidate();
-    dealerPanel.repaint();
     
-    updateBalanceDisplay();
-}
+    
     
 
     private void revealDealerHoleCard() {
@@ -320,43 +371,6 @@ public final class BlackjackGame extends JPanel {
     private void hideDealerHoleCard() {
         dealerCardRevealed = false;
         updateAreas();
-    }
-
-    private String handToString(List<Card> hand, boolean revealAll) {
-        StringBuilder sb = new StringBuilder();
-    
-        for (int i = 0; i < hand.size(); i++) {
-            Card card = hand.get(i);
-            String cardString;
-    
-            if (dealerHand == hand && i == 1 && !revealAll) {
-                // Keep the second card hidden if not revealed
-                cardString = "?????\n?-----?\n?-----?\n?????";
-            } else {
-                cardString = formatCard(card);
-            }
-    
-            sb.append(cardString);
-            if (i < hand.size() - 1) {
-                sb.append("\n"); // Add line breaks between cards
-            }
-        }
-        return sb.toString();
-    }
-
-    private String formatCard(Card card) {
-        // Represent the card as a string that visually looks like a card.
-        String rank = card.getValueStr(); // Get value (Ace, 2, 3, ..., King)
-        String suit = card.getSuit(); // Get suit (Hearts, Diamonds, Clubs, Spades)
-        
-        String cardTopBottom = "+-----+";
-        String cardMiddle = " |  " + rank + "   |"; // Rank in the middle of the card
-        
-        // Adjust for the suit representation
-        String cardSuitLine = " |  " + suit.charAt(0) + "   |"; // First letter of suit (H, D, C, S)
-    
-        // Combine the card lines into a card shape
-        return cardTopBottom + "\n" + cardMiddle + "\n" + cardSuitLine + "\n" + cardTopBottom;
     }
     
     private void nextRound(){
