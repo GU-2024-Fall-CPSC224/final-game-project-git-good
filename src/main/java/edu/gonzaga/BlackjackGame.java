@@ -38,8 +38,9 @@ public final class BlackjackGame extends JPanel {
     private final JPanel betPanel;
     private int bet;
 
-    private final JPanel playerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5)); // Horizontal alignment with gaps
-    private final JPanel dealerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5)); // Horizontal alignment with gaps
+    private final BackgroundPanel playerPanel;
+    private final BackgroundPanel dealerPanel;
+    
 
     private boolean dealerCardRevealed = false;
 
@@ -59,12 +60,15 @@ public final class BlackjackGame extends JPanel {
         statusLabel = new JLabel("Welcome to Blackjack!", SwingConstants.CENTER);
 
         JPanel gamePanel = new JPanel(new GridLayout(2, 1));
-        gamePanel.add(new JScrollPane(dealerPanel)); // Dealer's hand
-        gamePanel.add(new JScrollPane(playerPanel)); // Player's hand
-
+        playerPanel = new BackgroundPanel("/bjtable.jpg");
+        playerPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        dealerPanel = new BackgroundPanel("/bjtable.jpg");
+        dealerPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5)); // Maintain horizontal alignment
         add(gamePanel, BorderLayout.CENTER);
         add(statusLabel, BorderLayout.NORTH);
-
+        
+        gamePanel.add(new JScrollPane(dealerPanel)); // Dealer's hand
+        gamePanel.add(new JScrollPane(playerPanel)); // Player's hand
         // Initialize button panels
         buttonPanel = new JPanel();
         betPanel = new JPanel();

@@ -109,8 +109,7 @@ public class ClosingScreen extends JPanel {
                 balanceChangeStr  // Balance Change
             });
         }
-    }
-    
+    }  
 
     public void clearTableData() {
         DefaultTableModel tableModel = (DefaultTableModel) resultsTable.getModel();
